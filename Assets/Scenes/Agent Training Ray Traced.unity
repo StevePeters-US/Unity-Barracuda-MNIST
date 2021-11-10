@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 2155.4941, g: 2385.7637, b: 2961.0234, a: 1}
+  m_IndirectSpecularColor: {r: 2059.959, g: 2253.0508, b: 2745.5, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2070,6 +2070,7 @@ MonoBehaviour:
   tryOnStart: 1
   defaultStreamURL: http://192.168.0.111:8001/stream.mjpg
   renderTexture: {fileID: 8400000, guid: 409e9a8e9a81cae469b16ecb94cfb5f8, type: 2}
+  MNISTRenderTexture: {fileID: 8400000, guid: 63ff47f15b1468642be160023811d75a, type: 2}
 --- !u!1001 &1152612969
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3061,7 +3062,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   streamProjectorTexture: {fileID: 8400000, guid: 409e9a8e9a81cae469b16ecb94cfb5f8, type: 2}
-  MNISTRenderTexture: {fileID: 8400000, guid: 4ee1725a40310894b96f5c33f6ea5c4f, type: 2}
+  MNISTProjectorTexture: {fileID: 8400000, guid: 63ff47f15b1468642be160023811d75a, type: 2}
   runtimeTexture: {fileID: 2800000, guid: 3807eccdfcac28e4ab7994a2da93ae14, type: 3}
   modelAsset: {fileID: 5022602860645237092, guid: a9817fb4107749d4e9a337fb01b1b85d, type: 3}
   prediction:

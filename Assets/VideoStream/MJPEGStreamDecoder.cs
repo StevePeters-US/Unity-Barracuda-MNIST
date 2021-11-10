@@ -22,6 +22,7 @@ public class MJPEGStreamDecoder : MonoBehaviour {
     [SerializeField] string defaultStreamURL = "http://127.0.0.1/stream";
 
     [SerializeField] RenderTexture renderTexture;
+    [SerializeField] RenderTexture MNISTRenderTexture;
 
     //float RETRY_DELAY = 5f;
     int MAX_RETRIES = 3;
@@ -186,6 +187,7 @@ public class MJPEGStreamDecoder : MonoBehaviour {
             return; // Failure!
 
         Graphics.Blit(texture2D, renderTexture);
+        Graphics.Blit(texture2D, MNISTRenderTexture); 
         Destroy(texture2D); // LoadImage discards the previous buffer, so there's no point in trying to reuse it
     }
 }

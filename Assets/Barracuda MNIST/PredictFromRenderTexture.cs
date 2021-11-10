@@ -7,9 +7,10 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 // Based on https://www.youtube.com/watch?v=ggmArUbRvC4
-public class GetInferenceFromModel : MonoBehaviour {
-    public RenderTexture streamProjectorTexture;
-    public Texture2D runtimeTexture;
+public class PredictFromRenderTexture : MonoBehaviour {
+    public RenderTexture MNISTProjectorTexture; // This texture needs to be generated in MJPEGStreamDecoder.SendFrame()
+
+    private Texture2D runtimeTexture;
     public NNModel modelAsset;
 
     private Model runtimeModel;
@@ -34,25 +35,22 @@ public class GetInferenceFromModel : MonoBehaviour {
         runtimeModel = ModelLoader.Load(modelAsset);
         worker = WorkerFactory.CreateWorker(runtimeModel, WorkerFactory.Device.GPU);
         prediction = new Prediction();
+        runtimeTexture = new Texture2D(MNISTProjectorTexture.width, MNISTProjectorTexture.height, TextureFormat.R8, false);
     }
 
     void Update() {
         if (Input.GetKeyDown(KeyCode.Space)) {
-            runtimeTexture = RenderTexturetoTexture2D(streamProjectorTexture);
+            runtimeTexture = RenderTexturetoTexture2D(MNISTProjectorTexture);
             Predict();
         }
     }
 
-    // Outputs an image based on a render texture. Creates 2 textures in the process, so probably not efficient.
+    // Outputs an image based on a render texture. 
     public Texture2D RenderTexturetoTexture2D(RenderTexture rTex, int sizeX = 28, int sizeY = 28) {
-        Texture2D dest = new Texture2D(rTex.width, rTex.height, TextureFormat.RGBA32, false);
+        Texture2D dest = new Texture2D(rTex.width, rTex.height, TextureFormat.R8, false);
         dest.Apply(false);
         Graphics.CopyTexture(rTex, dest);
-
-        Texture2D outTex = new Texture2D(sizeX, sizeY, TextureFormat.RGBA32, false);
-        outTex.Apply();
-        Graphics.ConvertTexture(dest, outTex);
-        return outTex;
+        return dest;
     }
     private void Predict() {
         // make a tensor out of a grayscale image
