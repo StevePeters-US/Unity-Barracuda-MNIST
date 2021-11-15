@@ -21,8 +21,7 @@ public class MJPEGStreamDecoder : MonoBehaviour {
     [SerializeField] bool tryOnStart = false;
     [SerializeField] string defaultStreamURL = "http://127.0.0.1/stream";
 
-    [SerializeField] RenderTexture renderTexture;
-    [SerializeField] RenderTexture MNISTRenderTexture;
+    [SerializeField] RenderTexture[] updatedRenderTextures; // Keep the number of updated textures small
 
     //float RETRY_DELAY = 5f;
     int MAX_RETRIES = 3;
@@ -186,8 +185,9 @@ public class MJPEGStreamDecoder : MonoBehaviour {
         if (texture2D.width == 2)
             return; // Failure!
 
-        Graphics.Blit(texture2D, renderTexture);
-        Graphics.Blit(texture2D, MNISTRenderTexture); 
+        foreach(RenderTexture updateTexture in updatedRenderTextures) {
+            Graphics.Blit(texture2D, updateTexture);
+        } 
         Destroy(texture2D); // LoadImage discards the previous buffer, so there's no point in trying to reuse it
     }
 }

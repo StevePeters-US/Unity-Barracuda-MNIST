@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.Barracuda;
 using UnityEngine;
 using UnityEngine.Rendering;
+using TMPro;
 
 // Based on https://www.youtube.com/watch?v=ggmArUbRvC4
 public class PredictFromRenderTexture : MonoBehaviour {
@@ -15,17 +16,22 @@ public class PredictFromRenderTexture : MonoBehaviour {
 
     private Model runtimeModel;
 
-    private IWorker worker; 
+    private IWorker worker;
+
+    public TMP_Text predictionText;
+
+    public bool updateAutomatically = true;
+    public float updateFrequency = 0.1f;
 
     [Serializable]
     public struct Prediction {
         public int predictedValue;
         public float[] predictedArr;
-
-        public void SetPrediction(Tensor t) {
+        public void SetPrediction(Tensor t, TMP_Text predictionText) {
             predictedArr = t.AsFloats();
             predictedValue = Array.IndexOf(predictedArr, predictedArr.Max());   //Argmax
             Debug.Log($" Predicted {predictedValue}");
+            predictionText.SetText(predictedValue.ToString());
         }
     }
 
@@ -35,12 +41,14 @@ public class PredictFromRenderTexture : MonoBehaviour {
         runtimeModel = ModelLoader.Load(modelAsset);
         worker = WorkerFactory.CreateWorker(runtimeModel, WorkerFactory.Device.GPU);
         prediction = new Prediction();
-        runtimeTexture = new Texture2D(MNISTProjectorTexture.width, MNISTProjectorTexture.height, TextureFormat.R8, false);
+
+        if (updateAutomatically) {
+            InvokeRepeating("Predict", updateFrequency, updateFrequency);
+        }
     }
 
     void Update() {
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            runtimeTexture = RenderTexturetoTexture2D(MNISTProjectorTexture);
+        if (!updateAutomatically && Input.GetKeyDown(KeyCode.Space)) {
             Predict();
         }
     }
@@ -53,13 +61,14 @@ public class PredictFromRenderTexture : MonoBehaviour {
         return dest;
     }
     private void Predict() {
+        runtimeTexture = RenderTexturetoTexture2D(MNISTProjectorTexture);
+
         // make a tensor out of a grayscale image
         var channelCount = 1;
         var inputX = new Tensor(runtimeTexture, channelCount);
 
         Tensor outputY = worker.Execute(inputX).PeekOutput();
-
-        prediction.SetPrediction(outputY);
+        prediction.SetPrediction(outputY, predictionText);
 
         //Manage Memory
         inputX.Dispose();
